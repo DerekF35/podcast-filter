@@ -32,7 +32,7 @@ OptionParser.new do |parser|
 		field = "./%s" % [x]
 	end
 
-	parser.on('l', "--pod-link URL" % [field] ) do |x|
+	parser.on('-l', "--pod-link URL" % [field] ) do |x|
 		pod_link = x
 	end
 
