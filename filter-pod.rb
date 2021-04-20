@@ -9,7 +9,7 @@ include_filter = nil
 exclude_filter = nil
 item_path='//rss/channel/item'
 field='title'
-atom_link=nil
+pod_link=nil
 
 OptionParser.new do |parser|
 	parser.on('-u', '--url URL') do |x|
@@ -32,8 +32,8 @@ OptionParser.new do |parser|
 		field = "./%s" % [x]
 	end
 
-	parser.on('l', "--atom-link URL" % [field] ) do |x|
-		atom_link = x
+	parser.on('l', "--pod-link URL" % [field] ) do |x|
+		pod_link = x
 	end
 
 end.parse!
@@ -42,8 +42,9 @@ raise "URL required" if url.nil? || url === ""
 
 doc = Nokogiri::XML(URI.open(url))
 
-if ! atom_link.nil?
-	doc.xpath('//rss/channel/atom:link').attr('href', atom_link)
+if ! pod_link.nil?
+	doc.xpath('//rss/channel/atom:link').attr('href', pod_link)
+	doc.xpath('//rss/channel/link').first.content = pod_link
 end
 
 doc.xpath(item_path).each do |item|
