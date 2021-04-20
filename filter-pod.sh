@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker run podcast-filter "$@"
+docker run --rm podcast-filter "$@"
