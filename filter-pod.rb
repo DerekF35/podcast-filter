@@ -48,8 +48,9 @@ if ! pod_link.nil?
 end
 
 doc.xpath(item_path).each do |item|
-	if !include_filter.nil? and !item.xpath(field).text =~ /#{include_filter}/i
+	if !include_filter.nil? and item.xpath(field).text !~ /#{include_filter}/i
 		item.remove
+		next
 	end
 
 	if !exclude_filter.nil? and item.xpath(field).text =~ /#{exclude_filter}/i
