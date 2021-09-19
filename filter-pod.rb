@@ -3,6 +3,7 @@
 require 'optparse'
 require 'nokogiri'
 require 'open-uri'
+require 'date'
 
 url = nil
 include_filter = nil
@@ -10,6 +11,7 @@ exclude_filter = nil
 item_path='//rss/channel/item'
 field='title'
 pod_link=nil
+earliest_pub=nil
 
 OptionParser.new do |parser|
 	parser.on('-u', '--url URL') do |x|
@@ -32,6 +34,11 @@ OptionParser.new do |parser|
 		field = "./%s" % [x]
 	end
 
+	parser.on('', '--earliest-pub-date DATE (Format: YYYY-MM-DD)' ) do |x|
+		raise "Invalid date for --earliest-pub-date" if x !~ /20[0-9]{2}-[01][0-9]-[0-3][0-9]/
+		earliest_pub = x
+	end
+
 	parser.on('-l', "--pod-link URL" % [field] ) do |x|
 		pod_link = x
 	end
@@ -48,6 +55,11 @@ if ! pod_link.nil?
 end
 
 doc.xpath(item_path).each do |item|
+	if !earliest_pub.nil? and Date.parse(item.xpath('pubDate').text).strftime('%Y-%m-%d') < earliest_pub
+		item.remove
+		next
+	end
+
 	if !include_filter.nil? and item.xpath(field).text !~ /#{include_filter}/i
 		item.remove
 		next
