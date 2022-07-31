@@ -47,7 +47,7 @@ end.parse!
 
 raise "URL required" if url.nil? || url === ""
 
-doc = Nokogiri::XML(URI.open(url))
+doc = Nokogiri::XML(URI.open(url, :read_timeout => 120))
 
 if ! pod_link.nil?
 	doc.xpath('//rss/channel/atom:link').attr('href', pod_link)
