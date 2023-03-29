@@ -12,6 +12,8 @@ item_path='//rss/channel/item'
 field='title'
 pod_link=nil
 earliest_pub=nil
+pod_title=nil
+pod_image=nil
 
 OptionParser.new do |parser|
 	parser.on('-u', '--url URL') do |x|
@@ -43,11 +45,30 @@ OptionParser.new do |parser|
 		pod_link = x
 	end
 
+	parser.on('', "--pod-title title" % [field] ) do |x|
+		pod_title = x
+	end
+
+	parser.on('', "--pod-image URL" % [field] ) do |x|
+		pod_image = x
+	end
+
 end.parse!
 
 raise "URL required" if url.nil? || url === ""
 
 doc = Nokogiri::XML(URI.open(url, :read_timeout => 120))
+
+# https://filteredpods.s3.amazonaws.com/pods/images/extra_point_taken.jpg
+
+if ! pod_title.nil?
+	doc.xpath('//rss/channel/title').first.content = pod_title
+	doc.xpath('//rss/channel/image/title').first.content = pod_title
+end
+
+if ! pod_image.nil?
+	doc.xpath('//rss/channel/image/url').first.content = pod_image
+end
 
 if ! pod_link.nil?
 	doc.xpath('//rss/channel/atom:link').attr('href', pod_link)
@@ -68,6 +89,11 @@ doc.xpath(item_path).each do |item|
 	if !exclude_filter.nil? and item.xpath(field).text =~ /#{exclude_filter}/i
 		item.remove
 	end
+
+	if ! pod_image.nil?
+		item.xpath('itunes:image').attr('href', pod_image)
+	end
+
 end
 
 
