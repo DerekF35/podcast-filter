@@ -68,6 +68,7 @@ end
 
 if ! pod_image.nil?
 	doc.xpath('//rss/channel/image/url').first.content = pod_image
+	doc.xpath('//rss/channel/itunes:image').attr('href', pod_image)
 end
 
 if ! pod_link.nil?
