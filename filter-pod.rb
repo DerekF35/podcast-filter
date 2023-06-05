@@ -57,7 +57,19 @@ end.parse!
 
 raise "URL required" if url.nil? || url === ""
 
-doc = Nokogiri::XML(URI.open(url, :read_timeout => 120))
+MAX_ATTEMPTS = 3
+attempts = MAX_ATTEMPTS
+
+begin
+	doc = Nokogiri::XML(URI.open(url, :read_timeout => 120))
+rescue => e
+	puts e
+	attempts -= 1
+	sleep ((MAX_ATTEMPTS - attempts) * 5 )
+	retry if attempts > 0
+	puts "Attempts expired."
+	raise "Cannot reach podcast feed."
+end
 
 # https://filteredpods.s3.amazonaws.com/pods/images/extra_point_taken.jpg
 
