@@ -110,4 +110,4 @@ doc.xpath(item_path).each do |item|
 end
 
 
-puts doc.to_s
+puts doc.to_s.gsub(/^\s+\n/,'')
